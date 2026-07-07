@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+	<error-handler name="Global_Error_Handler">
+		<on-error-propagate type="APIKIT:BAD_REQUEST"
+			doc:name="400">
+			<ee:transform doc:name="Transform Message"
+				doc:id="5409e25c-5218-47f4-a207-74f72a5b8844">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output json
+---
+{
+	"code": 400,
+	"correlation_id": correlationId,
+	"reason": error.errorType.identifier,	
+	"detail": error.description
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables />
+			</ee:transform>
+			<set-variable value="400" doc:name="httpStatus"
+				doc:id="a13aa613-f9e9-4749-becf-1d9de7fb2545"
+				variableName="httpStatus" />
+			<ee:transform doc:name="Log"
+				doc:id="e2e0003a-a354-410d-bca9-cdbab9b4ec1d">
+				<ee:message />
+				<ee:variables>
+					<ee:set-variable variableName="log"><![CDATA[%dw 2.0
+output json
+---
+{
+	"Endpoint": vars.attributes.requestPath,
+	"Request_payload": vars.payload,
+	"Response_payload": payload
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Logger"
+				doc:id="a2dae176-c7cd-4dfa-bd8a-582a878639f8"
+				message="#[%dw 2.0&#10;output java&#10;---&#10;'&#10;Trace Point - Error 400&#10;'&#10;++&#10;write(vars.log,'application/json')]" />
+		</on-error-propagate>
+		<on-error-propagate type="APIKIT:NOT_FOUND"
+			doc:name="404">
+			<ee:transform doc:name="Transform Message"
+				doc:id="00e33231-70c3-46e9-becf-d3dc000714d6">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output json
+---
+{
+	"code": 404,
+	"correlation_id": correlationId,
+	"reason": error.errorType.identifier,	
+	"detail": error.description
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables />
+			</ee:transform>
+			<set-variable value="404" doc:name="httpStatus"
+				doc:id="b5a3aee2-783c-402e-8ece-37047739fc21"
+				variableName="httpStatus" />
+			<ee:transform doc:name="Log"
+				doc:id="ce1cae25-4189-4a07-b002-898d4d00d102">
+				<ee:message />
+				<ee:variables>
+					<ee:set-variable variableName="log"><![CDATA[%dw 2.0
+output json
+---
+{
+	"Endpoint": vars.attributes.requestPath,
+	"Request_payload": vars.payload,
+	"Response_payload": payload
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Logger"
+				doc:id="dc908ba3-b021-487e-b9ef-8a180b9361ca"
+				message="#[%dw 2.0&#10;output java&#10;---&#10;'&#10;Trace Point - Error 404&#10;'&#10;++&#10;write(vars.log,'application/json')]" />
+		</on-error-propagate>
+		<on-error-propagate
+			type="APIKIT:METHOD_NOT_ALLOWED" doc:name="405">
+			<ee:transform doc:name="Transform Message"
+				doc:id="048617a2-910f-4943-a24f-0f60f22d3d66">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output json
+---
+{
+	"code": 405,
+	"correlation_id": correlationId,
+	"reason": error.errorType.identifier,
+	"detail": error.description
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables />
+			</ee:transform>
+			<set-variable value="405" doc:name="httpStatus"
+				doc:id="4e054b63-58b8-4dc7-978c-3f360ee49683"
+				variableName="httpStatus" />
+			<ee:transform doc:name="Log"
+				doc:id="e1309299-8770-489f-8f74-50121eea8854">
+				<ee:message />
+				<ee:variables>
+					<ee:set-variable variableName="log"><![CDATA[%dw 2.0
+output json
+---
+{
+	"Endpoint": vars.attributes.requestPath,
+	"Request_payload": vars.payload,
+	"Response_payload": payload
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Logger"
+				doc:id="5b00237f-043a-4921-ad2d-5f883b31f930"
+				message="#[%dw 2.0&#10;output java&#10;---&#10;'&#10;Trace Point - Error 405&#10;'&#10;++&#10;write(vars.log,'application/json')]" />
+		</on-error-propagate>
+		<on-error-propagate type="APIKIT:NOT_ACCEPTABLE"
+			doc:name="406">
+			<ee:transform doc:name="Transform Message"
+				doc:id="cf13a336-47fe-43a5-bb51-8e3e444864ed">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output json
+---
+{
+	"code": 406,
+	"correlation_id": correlationId,
+	"reason": error.errorType.identifier,
+	"detail": error.description
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables />
+			</ee:transform>
+			<set-variable value="406" doc:name="httpStatus"
+				doc:id="f857f3cd-7627-4b63-88e4-6d3e2cb9cbcd"
+				variableName="httpStatus" />
+			<ee:transform doc:name="Log"
+				doc:id="9a73e1b7-dc33-46a5-8173-72fc1f61efde">
+				<ee:message />
+				<ee:variables>
+					<ee:set-variable variableName="log"><![CDATA[%dw 2.0
+output json
+---
+{
+	"Endpoint": vars.attributes.requestPath,
+	"Request_payload": vars.payload,
+	"Response_payload": payload
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Logger"
+				doc:id="ba7a5347-ac59-4036-9a2e-f4dc4d8bbce8"
+				message="#[%dw 2.0&#10;output java&#10;---&#10;'&#10;Trace Point - Error 406&#10;'&#10;++&#10;write(vars.log,'application/json')]" />
+		</on-error-propagate>
+		<on-error-propagate
+			type="APIKIT:UNSUPPORTED_MEDIA_TYPE" doc:name="415">
+			<ee:transform doc:name="Transform Message"
+				doc:id="83b6a2d6-a2cb-4426-96b0-6b6bb2d96474">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output json
+---
+{
+	"code": 415,
+	"correlation_id": correlationId,
+	"reason": error.errorType.identifier,
+	"detail": error.description
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables />
+			</ee:transform>
+			<set-variable value="415" doc:name="httpStatus"
+				doc:id="7dfbb6c5-072e-47b4-a758-949a0a1aa488"
+				variableName="httpStatus" />
+			<ee:transform doc:name="Log"
+				doc:id="9b9549ff-dd4b-4726-85f6-7e9832f0c77b">
+				<ee:message />
+				<ee:variables>
+					<ee:set-variable variableName="log"><![CDATA[%dw 2.0
+output json
+---
+{
+	"Endpoint": vars.attributes.requestPath,
+	"Request_payload": vars.payload,
+	"Response_payload": payload
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Logger"
+				doc:id="19e1c566-4301-4bfc-8cfc-90dffe87a154"
+				message="#[%dw 2.0&#10;output java&#10;---&#10;'&#10;Trace Point - Error 415&#10;'&#10;++&#10;write(vars.log,'application/json')]" />
+		</on-error-propagate>
+		<on-error-propagate type="APIKIT:NOT_IMPLEMENTED"
+			doc:name="501">
+			<ee:transform doc:name="Transform Message"
+				doc:id="8cbf236c-af50-488d-be9c-6c4050287e2b">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output json
+---
+{
+	"code": 501,
+	"correlation_id": correlationId,
+	"reason": error.errorType.identifier,	
+	"detail": error.description
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables />
+			</ee:transform>
+			<set-variable value="501" doc:name="httpStatus"
+				doc:id="3a367b06-2da6-4478-b5aa-f4ec8b2e2a87"
+				variableName="httpStatus" />
+			<ee:transform doc:name="Log"
+				doc:id="ca95f28e-2cb1-4652-b390-bd117c1c69c4">
+				<ee:message />
+				<ee:variables>
+					<ee:set-variable variableName="log"><![CDATA[%dw 2.0
+output json
+---
+{
+	"Endpoint": vars.attributes.requestPath,
+	"Request_payload": vars.payload,
+	"Response_payload": payload
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Logger"
+				doc:id="f82aff48-49c0-47ae-96f3-c17ce8b3a9fc"
+				message="#[%dw 2.0&#10;output java&#10;---&#10;'&#10;Trace Point - Error 501&#10;'&#10;++&#10;write(vars.log,'application/json')]" />
+		</on-error-propagate>
+	</error-handler>
+	<error-handler name="SubFlow_Error_Handler">
+		<on-error-propagate enableNotifications="true"
+			logException="true" doc:name="On Error Propagate"
+			doc:id="bc801468-066e-4231-a792-222b0c7413aa">
+			<ee:transform doc:name="Transform Message"
+				doc:id="30c4eb3f-6c20-4bf2-8800-77597f5e7f41">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="mapError"><![CDATA[%dw 2.0
+output application/json
+var mainError = error.suppressedErrors[0] default error
+var attrs = mainError.errorMessage.attributes default {}
+var headers = attrs.headers default {}
+var contentLength = headers."content-length" default "-1"
+---
+{
+    "code": attrs.statusCode default 500,
+    "correlation_id": correlationId,
+    "reason": mainError.errorType.identifier 
+            default "Unknown Error",
+    "detail": error.description 
+            default mainError.cause.localizedMessage 
+            default "No details available",
+    "response": if (contentLength == "0") null else mainError.errorMessage.payload
+}
+]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<set-variable value="500" doc:name="httpStatus"
+				doc:id="755887c7-3da4-47d9-ae4a-dc2be0af7a89"
+				variableName="httpStatus" />
+			<set-payload
+				value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;    "code": 500,&#10;    "correlation_id": correlationId,&#10;    "reason": "INTERNAL_SERVER_ERROR",&#10;    "detail": "Erro no processamento da requisição - código: " ++ correlationId,    &#10;}]'
+				doc:name="Set Payload" doc:id="054c431b-e857-4eac-abf8-7511b44e1ebb" />
+			<logger level="ERROR" doc:name="Logger"
+				doc:id="930ec663-f87e-4f83-9de6-e7a1ae9c8c9a"
+				message="#[output application/java&#10;---&#10;'&#10;Trace Point - ERROR - ' &#10;++ write(vars.attributes.requestPath,'application/json') ++ '&#10;'&#10;++&#10;write(vars.mapError,'application/json')]" />
+		</on-error-propagate>
+	</error-handler>
+</mule>

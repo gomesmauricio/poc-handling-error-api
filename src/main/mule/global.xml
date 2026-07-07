@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+	<http:listener-config name="poc-handling-erro-httpListenerConfig">
+        <http:listener-connection host="${listenerHttps.host}" port="${listenerHttps.value}"/>
+    </http:listener-config>
+    <apikit:config name="poc-handling-erro-config" api="resource::0043a1c9-f148-4e7b-a379-bc3bcb9c1210:poc-handling-erro:1.0.0:raml:zip:poc-handling-erro.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />	
+	<http:request-config name="HTTP_Request_config" doc:name="HTTP Request config" doc:id="ff020d8d-828c-4efc-9eff-c5aa33cf9c09" >
+		<http:request-connection host="#[vars.dataSend.Host]" />
+	</http:request-config>
+	<configuration-properties
+		doc:name="Configuration properties"
+		doc:id="6ce806bb-33f3-46ca-8e9b-b8c04b1f4b66"
+		file="config/${mule.env}-properties.yaml" />
+	<flow name="setVeriablesStartFlow" doc:id="370f51bc-99ce-46ae-947f-5564b4729e78" >
+		<ee:transform doc:name="Set Variables" doc:id="dfeb4b52-19a7-4e42-b4f5-fafc4df9a389" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="payload" ><![CDATA[%dw 2.0
+output json
+---
+payload]]></ee:set-variable>
+				<ee:set-variable variableName="attributes" ><![CDATA[%dw 2.0
+output json
+---
+attributes]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+	<flow name="Logger_Start" doc:id="12c35c66-eb8b-47db-a28c-8c9dd4977a50" >
+		<logger level="DEBUG" doc:name="START" doc:id="caa27beb-efb3-4385-96d4-f426dab0be22" message="#[output java&#10;---&#10;'&#10;Trace Point - START - ' ++ write(vars.attributes.requestPath, 'application/json') ++ '&#10;'&#10;++ write(vars.payload, 'application/json')]" category="flow.start" />
+	</flow>
+	<flow name="Logger_End" doc:id="cf13cb3c-bfb6-4c5f-80c8-3a24509408f9" >
+		<logger level="DEBUG" doc:name="END" doc:id="82d037f0-f0c4-48aa-8bc8-a398bcd47e86" message="#[output java&#10;---&#10;'&#10;Trace Point - END - ' ++ write(vars.attributes.requestPath, 'application/json') ++ '&#10;'&#10;++ write(payload, 'application/json')]" category="flow.end" />
+	</flow>
+	<flow name="GlobalRequest-flow" doc:id="79f748c6-63b0-4933-b73f-98b28d45c976" >
+		<logger level="DEBUG" doc:name="before request" doc:id="3b60606f-22b6-4d9e-8fc8-694dc4ddce56" message="#[output java&#10;---&#10;'&#10;Trace Point - BEFORE REQUEST - ' &#10;++ write(vars.dataSend.Host ++ vars.dataSend.Path,'application/json') ++ '&#10;'&#10;++&#10;write(payload,'application/json')]" category="before.request" />
+		<http:request doc:name="Request" doc:id="a6d00d71-3dd6-4f29-b44a-2c94cedca689" config-ref="HTTP_Request_config" path="#[vars.dataSend.Path]" method="#[vars.dataSend.Method]"/>
+		<ee:transform doc:name="Transform Message" doc:id="3b319a2c-476d-45c7-bffa-eaaa063aab32" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+read(payload, "application/json")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="after request" doc:id="36ce724b-72ce-4ebe-8b70-83ee74a91a16" message="#[output java&#10;---&#10;'&#10;Trace Point - AFTER REQUEST - ' &#10;++ write(vars.dataSend.Host ++ vars.dataSend.Path,'application/json') ++ '&#10;'&#10;++&#10;write(payload,'application/json')]" category="after.request" />
+		<error-handler ref="SubFlow_Error_Handler" />
+	</flow>
+
+
+</mule>

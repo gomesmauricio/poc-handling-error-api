@@ -1,0 +1,11 @@
+listenerHttps:
+  host: "0.0.0.0"
+  value: "${listenerHttps.port}"
+  port: "8082"
+  private:
+    port: "8092"
+    
+mock:
+  host: "d433c488-84e0-4c32-a108-e847e4c9622a.mock.pstmn.io"
+  path: "/status"
+  port: "443"

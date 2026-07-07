@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    
+    <flow name="poc-handling-erro-main">
+        <http:listener config-ref="poc-handling-erro-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <flow-ref doc:name="setVeriablesStartFlow" doc:id="0181d830-238d-43e8-ae53-a9d19e194df1" name="setVeriablesStartFlow"/>
+		<apikit:router config-ref="poc-handling-erro-config" />
+		<error-handler ref="Global_Error_Handler" />
+    </flow>
+    <flow name="get:\status:poc-handling-erro-config">
+    <flow-ref doc:name="Logger_Start" doc:id="a386c471-63d2-48dd-a381-8d0faf564988" name="Logger_Start"/>
+		<set-variable value="#[%dw 2.0 &#10;output application/json &#10;--- &#10;{&#10;	&quot;Protocol&quot;: &quot;HTTPS&quot;,&#10;	&quot;Method&quot;: &quot;GET&quot;,&#10;	&quot;Host&quot;: Mule::p('mock.host'),&#10;	&quot;Path&quot;: Mule::p(&quot;mock.path&quot;),&#10;	&quot;Timeout&quot;: Mule::p('30000')&#10;}]" doc:name="dataSend" doc:id="f55bef1c-3792-4c9d-8610-ffd759ddb8fb" variableName="dataSend" />
+        <flow-ref doc:name="GlobalRequest-flow" doc:id="7fe4e641-1f3b-493c-b6eb-15bb108e34eb" name="GlobalRequest-flow"/>
+		<flow-ref doc:name="Logger_End" doc:id="e552daab-03c0-47a9-91f2-198bfe14a549" name="Logger_End"/>
+    </flow>
+    <flow name="post:\status:application\json:poc-handling-erro-config">
+		<flow-ref doc:name="Logger_Start" doc:id="5853999e-a87c-441d-a517-92a5cb262a48" name="Logger_Start" />
+		<set-variable value="#[%dw 2.0 &#10;output application/json &#10;--- &#10;{&#10;	&quot;Protocol&quot;: &quot;HTTPS&quot;,&#10;	&quot;Method&quot;: &quot;POST&quot;,&#10;	&quot;Host&quot;: Mule::p('mock.host'),&#10;	&quot;Path&quot;: Mule::p(&quot;mock.path&quot;),&#10;	&quot;Timeout&quot;: Mule::p('30000')&#10;}]" doc:name="dataSend" doc:id="b2bdaeae-ad32-4c0b-9df6-89e09f34a1c1" variableName="dataSend" />
+		<flow-ref doc:name="GlobalRequest-flow" doc:id="65a236f4-16e2-4d0e-8164-da1e4bc2c88c" name="GlobalRequest-flow" />
+		<flow-ref doc:name="Logger_End" doc:id="76244a87-f311-479a-94e4-282835a75029" name="Logger_End" />
+    </flow>
+</mule>
