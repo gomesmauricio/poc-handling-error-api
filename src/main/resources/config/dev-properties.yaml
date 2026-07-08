@@ -1,7 +1,7 @@
 listenerHttps:
   host: "0.0.0.0"
   value: "${listenerHttps.port}"
-  port: "8082"
+  port: "8081"
   private:
     port: "8092"
     
